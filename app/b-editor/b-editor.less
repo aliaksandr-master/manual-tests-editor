@@ -1,0 +1,45 @@
+@import "../lib/mixins";
+
+.b-editor {
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.b-editor__menu-tag {
+
+}
+
+.b-editor__menu-tag--hidden {
+
+}
+
+.b-editor__menu-tag-name {
+  display: block;
+  color: black;
+  line-height: 1.4;
+  font-size: 16px;
+  padding: 10px 0;
+
+  &:after {
+    content: '▲';
+
+    .b-editor__menu-tag--hidden & {
+      content: ' ▼';
+    }
+  }
+}
+
+.b-editor__menu-tag-questions {
+  display: block;
+
+  .b-editor__menu-tag--hidden & {
+    display: none;
+
+  }
+}
+
+.b-editor__menu-tag-question {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

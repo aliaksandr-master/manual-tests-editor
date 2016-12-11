@@ -6,7 +6,7 @@ const pkg = require('../package.json');
 
 exports.ENV = process.env.NODE_ENV || 'development';
 exports.PACKAGE = pkg;
-exports.DEV_SERVER_PORT = 9001;
+exports.DEV_SERVER_PORT = 9002;
 exports.DEV_SERVER_HOST = 'localhost';
 exports.DEV_URL = `http://${exports.DEV_SERVER_HOST}:${exports.DEV_SERVER_PORT}/`;
 

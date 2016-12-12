@@ -9,6 +9,16 @@ export const EVENT_CLOSE = symbol('EVENT_CLOSE');
 export const EVENT_SAVE = symbol('EVENT_SAVE');
 export const EVENT_DELETE = symbol('EVENT_DELETE');
 
+const choiceRow = ({ text = '', isTruth = false } = {}) => `
+  <tr class="b-modal-edit-question__choice">
+    <td>
+      <textarea rows="4" class="b-modal-edit-question__choice-txt form-control" style="resize: vertical">${text}</textarea>
+    </td>
+    <td valign="top"><input class="b-modal-edit-question__answer" ${isTruth ? 'checked' : ''} value="1" type="checkbox"></td>
+    <td><a class="b-modal-edit-question__remove-row" href="" onclick="return false;">&times;</a></td>
+  </tr>
+`;
+
 export default component(({ question }) => `
 <div id="b-modal-edit-question" class="b-modal-edit-question modal fade" style="display: none;">
   <div class="modal-dialog">
@@ -32,15 +42,11 @@ export default component(({ question }) => `
             <td width="1">Верно</td>          
             <td width="1"></td>          
           </tr>
-          ${question.choices.map((choice, index) => `
-            <tr class="b-modal-edit-question__choice">
-              <td>
-                <textarea rows="4" class="b-modal-edit-question__choice-txt form-control" style="resize: vertical">${choice}</textarea>
-              </td>
-              <td valign="top"><input class="b-modal-edit-question__answer" ${question.answers.includes(index) ? 'checked' : ''} value="1" type="checkbox"></td>
-              <td><a class="b-modal-edit-question__remove-row" href="" onclick="return false;">&times;</a></td>
-            </tr>
-          `).join('')}
+          ${
+            question.choices.map((choice, index) => 
+              choiceRow({ text: choice, isTruth: question.answers.includes(index) })
+            ).join('')
+          }
         </table>
         <button type="button" class="b-modal-edit-question__add-btn btn btn-default">Добавить вариант ответа</button>
       </form>
@@ -63,6 +69,18 @@ export default component(({ question }) => `
   };
 
   const { on, serialize } = componentDom(el, events);
+
+  let removeRowListenersCleanup = () => {};
+  const initRemoveRowListeners = () => {
+    removeRowListenersCleanup();
+    removeRowListenersCleanup = on('.b-modal-edit-question__remove-row', 'click', (ev) => {
+      const row = ev.currentTarget.parentNode.parentNode;
+
+      row.parentNode.removeChild(row);
+    });
+  };
+
+  initRemoveRowListeners();
 
   on('.b-modal-edit-question__save-btn', 'click', () => {
     let _question = {
@@ -116,29 +134,19 @@ export default component(({ question }) => `
   });
 
   on('.b-modal-edit-question__delete-btn', 'click', () => {
-    events.$emit(EVENT_DELETE, { question });
-    close();
+    if (confirm('Уверены что хотите удалить ?')) {
+      events.$emit(EVENT_DELETE, { question });
+      close();
+    }
   });
 
   on('.b-modal-edit-question__add-btn', 'click', () => {
-    el.querySelector('.b-modal-edit-question__choices').insertAdjacentHTML('beforeEnd', `
-      <tr>
-        <td>
-          <textarea rows="4" class="b-modal-edit-question__choice form-control" style="resize: vertical"></textarea>
-        </td>
-        <td valign="top"><input class="b-modal-edit-question__answer" value="1" type="checkbox"></td>
-        <td><a class="b-modal-edit-question__remove-row" href="" onclick="return false;">&times;</a></td>
-      </tr>
-    `);
+    el.querySelector('.b-modal-edit-question__choices').insertAdjacentHTML('beforeEnd', choiceRow());
+
+    initRemoveRowListeners();
   });
 
   on('.b-modal-edit-question__close-btn', 'click', () => {
     close();
-  });
-
-  on('.b-modal-edit-question__remove-row', 'click', (ev) => {
-    const row = ev.currentTarget.parentNode.parentNode;
-
-    row.parentNode.removeChild(row);
   });
 })

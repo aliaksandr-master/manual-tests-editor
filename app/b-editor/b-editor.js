@@ -14,13 +14,15 @@ const CLASS_HIDDEN_TAG_QUESTIONS = 'b-editor__menu-tag--hidden';
 const menu = (questionsByTag) => `
 <div class="b-editor__menu">
   ${Object.keys(questionsByTag).map((tag) => `
-    <div class="b-editor__menu-tag ${CLASS_HIDDEN_TAG_QUESTIONS}">
-      <a href="" onclick="return false;" class="b-editor__menu-tag-name">${tag} (${questionsByTag[tag].length})</a>
-      <div class="b-editor__menu-tag-questions">
+    <div class="b-editor__menu-tag panel panel-default ${CLASS_HIDDEN_TAG_QUESTIONS}">
+      <a href="" onclick="return false;" class="panel-heading b-editor__menu-tag-name">
+        ${tag} (${questionsByTag[tag].length})
+      </a>
+      <div class="panel-body b-editor__menu-tag-questions">
         ${
           questionsByTag[tag].map((question, index) => `
             <div class="b-editor__menu-tag-question-wr">
-              <a href="" onclick="return false;" data-question-id="${question.id}" class="b-editor__menu-tag-question">${index+1}. ${question.question}</a>
+              <a href="#${question.id}" title="Редактировать" data-question-id="${question.id}" class="b-editor__menu-tag-question">${index+1}. ${question.question.replace(/<br ?\/?>/g, ' ')}</a>
             </div>
           `).join('')
         }
@@ -32,9 +34,11 @@ const menu = (questionsByTag) => `
 
 
 export default component(({ questionsByTag }) => `
-<div class="b-editor">
-  <button class="b-editor__add-btn btn btn-success btn-lg" type="button">Создать новый вопрос</button>
+<div class="b-editor container">
   ${menu(questionsByTag)}
+  <div class="b-editor__add-btn-wr">
+    <button class="b-editor__add-btn btn btn-success btn-lg" type="button">Создать новый вопрос</button>
+  </div>
 </div>
 `, ({ questionsById }, { el, events, child }) => {
   const { on } = componentDom(el, events);

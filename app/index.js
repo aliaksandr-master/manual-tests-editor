@@ -56,6 +56,12 @@ resolve({
 
   console.log(data);
 
-  renderToDom(bEditor(data), document.body);
+  renderToDom(bEditor(data), document.body, {
+    onRender: () => {
+      const preloader = document.getElementById('preloader');
+
+      preloader.parentNode.removeChild(preloader);
+    }
+  });
 });
 

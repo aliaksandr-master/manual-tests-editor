@@ -14,8 +14,8 @@ const choiceRow = ({ text = '', isTruth = false } = {}) => `
     <td>
       <textarea rows="4" class="b-modal-edit-question__choice-txt form-control" style="resize: vertical">${text}</textarea>
     </td>
-    <td valign="top"><input class="b-modal-edit-question__answer" ${isTruth ? 'checked' : ''} value="1" type="checkbox"></td>
-    <td><a class="b-modal-edit-question__remove-row" href="" onclick="return false;">&times;</a></td>
+    <td width="1" valign="top"><input class="b-modal-edit-question__answer" ${isTruth ? 'checked' : ''} value="1" type="checkbox"></td>
+    <td width="1"><a class="b-modal-edit-question__remove-row" href="" onclick="return false;">&times;</a></td>
   </tr>
 `;
 
@@ -23,10 +23,6 @@ export default component(({ question }) => `
 <div id="b-modal-edit-question" class="b-modal-edit-question modal fade" style="display: none;">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="b-modal-edit-question__close close" data-dismiss="modal">×</button>
-        ${question.id ? 'Изменить вопрос' : 'Создать новый вопрос'}
-      </div>
       <form class="modal-body" onsubmit="return false;">
         <label for="">Текст Вопроса:</label>
         <textarea rows="4" name="questin" class="b-modal-edit-question__question form-control" style="resize: vertical">${question.question}</textarea>
@@ -38,9 +34,8 @@ export default component(({ question }) => `
         <br/>
         <table class="table b-modal-edit-question__choices">
           <tr>
-            <td>Ответ</td>          
-            <td width="1">Верно</td>          
-            <td width="1"></td>          
+            <th>Ответ</th>          
+            <th width="1" colspan="2">Верно</th>          
           </tr>
           ${
             question.choices.map((choice, index) => 
@@ -48,10 +43,12 @@ export default component(({ question }) => `
             ).join('')
           }
         </table>
-        <button type="button" class="b-modal-edit-question__add-btn btn btn-default">Добавить вариант ответа</button>
+        <div class="clearfix">
+          <button type="button" class="b-modal-edit-question__add-btn btn btn-success">Добавить вариант ответа</button>
+        </div>
       </form>
       <div class="modal-footer">
-        <button type="button" class="b-modal-edit-question__delete-btn btn btn-danger pull-left">Удалить</button>
+        <button type="button" class="b-modal-edit-question__delete-btn btn btn-default pull-left">Удалить</button>
         <button type="button" class="b-modal-edit-question__close-btn btn btn-default">Закрыть</button>
         <button type="button" class="b-modal-edit-question__save-btn btn btn-primary">Сохранить</button>
       </div>

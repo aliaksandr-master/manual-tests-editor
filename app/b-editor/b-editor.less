@@ -1,9 +1,23 @@
 @import "../lib/mixins";
 
 .b-editor {
+  margin: 40px 0 0;
   text-align: left;
   font-size: 14px;
   line-height: 1.4;
+  padding-bottom: 100px;
+  max-width: 768px;
+}
+
+.b-editor__add-btn-wr {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 15px;
+  border-top: 1px solid #ccc;
+  background: #f1f1f1;
 }
 
 .b-editor__menu-tag {
@@ -23,6 +37,7 @@
 
   &:after {
     content: '▲';
+    float: right;
 
     .b-editor__menu-tag--hidden & {
       content: ' ▼';
@@ -39,7 +54,18 @@
   }
 }
 
+.b-editor__menu-tag-question-wr {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
 .b-editor__menu-tag-question {
+  display: block;
+  white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  &:visited {
+    color: violet;
+  }
 }

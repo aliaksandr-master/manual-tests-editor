@@ -25,7 +25,7 @@ export default component(({ question }) => `
     <div class="modal-content">
       <form class="modal-body" onsubmit="return false;">
         <label for="">Текст Вопроса:</label>
-        <textarea rows="4" name="questin" class="b-modal-edit-question__question form-control" style="resize: vertical">${question.question}</textarea>
+        <textarea rows="4" name="question" class="b-modal-edit-question__question form-control" style="resize: vertical">${question.question}</textarea>
         <br/>
         <br/>
         <label for="">Имя категории:</label>

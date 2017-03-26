@@ -40,7 +40,7 @@ export default component(({ questionsByTag }) => `
     <button class="b-editor__add-btn btn btn-success btn-lg" type="button">Создать новый вопрос</button>
   </div>
 </div>
-`, ({ questionsById }, { el, events, child }) => {
+`, ({ questionsById, questions }, { el, events, child }) => {
   const { on } = componentDom(el, events);
 
   on('.b-editor__menu-tag-name', 'click', (ev) => {
@@ -74,28 +74,46 @@ export default component(({ questionsByTag }) => `
     document.body.classList.remove('modal-open');
   });
 
+  const saveToFile = (questions) => {
+    const lines = questions.map((q) => `${q.id} ${new Buffer(JSON.stringify(q)).toString('base64')}`);
+
+    return editResource(`/data/questions.dat4`, lines)
+  };
+
   events.on(EVENT_SAVE, ({ question }) => {
-    if (!question.id) {
-      return createResource('/data/', question)
-        .then(() => {
-          window.alert(`Создан новый вопрос`);
-          window.location.reload(true);
-        });
+    const isNew = Boolean(question.id);
+
+    if (isNew) {
+      question.id = sha1(String(JSON.stringify(question))).toString();
+      questions = questions.concat([ question ]);
+    } else {
+      const index = questions.findIndex((q) => q.id === question.id);
+
+      questions[index] = question;
     }
 
-    return editResource(`/data/${question.id}.dat4`, question)
+    return saveToFile(questions)
       .then(() => {
-        window.alert(`Данные вопроса обновлены`);
+        if (question.id) {
+          window.alert(`Данные вопроса обновлены`);
+        } else {
+          window.alert(`Создан новый вопрос`);
+        }
+
         window.location.reload(true);
       });
   });
 
   events.on(EVENT_DELETE, ({ question }) => {
-    deleteResource(`/data/${question.id}.dat4`)
-      .then(() => {
-        window.alert(`Удалено: ${question.id}`);
-        window.location.reload(true);
-      });
+    if (question.id) {
+      questions = questions.filter((q) => q.id !== question.id);
+
+      return saveToFile(questions)
+        .then(() => {
+          window.alert(`Удалено: ${question.id}`);
+          window.location.reload(true);
+        });
+    }
   });
 
   on('.b-editor__add-btn', 'click', () => {

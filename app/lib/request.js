@@ -38,14 +38,6 @@ export const getFileContent = (url) => {
     return window.getFileContent(url);
   }
 
-  return window.fetch(url);
-};
-
-export const getFilesInDir = (url) => {
-  if (window.getFilesInDir) {
-    return window.getFilesInDir(url);
-  }
-
-  return window.fetch(url, { headers: { 'X-Dir-Files': 'glob' } })
-    .then((response) => response.json());
+  return window.fetch(url)
+    .then((response) => response.text());
 };

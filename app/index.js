@@ -3,7 +3,7 @@
 import { renderToDom } from 'tiny-component';
 import bEditor from './b-editor/b-editor';
 import { getObject } from './lib/localstorage';
-import { getFilesInDir, getFileContent } from './lib/request';
+import { getFileContent } from './lib/request';
 import resolve from './lib/resolve';
 import groupBy from 'lodash/groupBy';
 import './index.less';
@@ -13,25 +13,23 @@ const MAX_TIME = 30 * 60 * 1000;
 
 resolve({
   auth: () => getObject('auth', { first_name: '', last_name: '', group_number: 0 }),
-  questions: () => getFilesInDir('/data/*.dat4')
-    .then((questionFiles) => Promise.all(
-      questionFiles.map((questionFile) =>
-        getFileContent(questionFile)
-          .then((response) => response.text())
-          .then((content) => {
-            content = new Buffer(content, 'base64').toString('utf8');
+  questions: () => getFileContent('/data/questions.dat4')
+    .then((content) =>
+      content
+        .split('\n').filter(Boolean)
+        .map((line) => line.split(/\s+/).filter(Boolean).pop())
+        .map((content) => new Buffer(content, 'base64').toString('utf8'))
+        .map((content) => {
+          try {
+            content = JSON.parse(content);
+          } catch (er) {
+            content = null;
+          }
 
-            try {
-              content = JSON.parse(content);
-            } catch (er) {
-              content = null;
-            }
-
-            return content;
-          })
-      )
-    ))
-    .then((questions) => questions.filter(Boolean))
+          return content;
+        })
+        .filter(Boolean)
+    )
 })
 .then(resolve.nested({
   questionsByTag: ({ questions }) =>

@@ -55,15 +55,11 @@
       const CWD = path.dirname(process.execPath);
       const fs = require('fs');
 
-      window.getFileContent = (url) => {
-        Promise.resolve()
-          .then(() => fs.readFileSync(path.join(CWD, url), 'utf8'));
-      };
+      window.getFileContent = (url) =>
+        Promise.resolve(fs.readFileSync(path.join(CWD, url), 'utf8'));
 
-      window.editResource = (url, data) => {
-        Promise.resolve()
-          .then(() => fs.writeFileSync(path.join(CWD, url), data, 'utf8'));
-      };
+      window.editResource = (url, data) =>
+        Promise.resolve(fs.writeFileSync(path.join(CWD, url), data, 'utf8'));
 
       win.on('close', () => {
         win.close(true);

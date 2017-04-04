@@ -77,11 +77,11 @@ export default component(({ questionsByTag }) => `
   const saveToFile = (questions) => {
     const lines = questions.map((q) => `${q.id} ${new Buffer(JSON.stringify(q)).toString('base64')}`);
 
-    return editResource(`/data/questions.dat4`, lines)
+    return editResource(`/data/questions.dat4`, lines.join('\n'))
   };
 
   events.on(EVENT_SAVE, ({ question }) => {
-    const isNew = Boolean(question.id);
+    const isNew = !question.id;
 
     if (isNew) {
       question.id = sha1(String(JSON.stringify(question))).toString();
@@ -132,8 +132,6 @@ export default component(({ questionsByTag }) => `
 
   on('.b-editor__menu-tag-question', 'click', (ev) => {
     const question = questionsById[ev.currentTarget.dataset.questionId];
-
-    console.log(question);
 
     editQuestion(question);
   });

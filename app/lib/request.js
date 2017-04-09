@@ -41,3 +41,42 @@ export const getFileContent = (url) => {
   return window.fetch(url)
     .then((response) => response.text());
 };
+
+export const saveTestData = (meta, questions) => {
+  let lines = [
+    new Buffer(JSON.stringify(meta)).toString('base64')
+  ];
+
+  lines = lines.concat(questions.map((q) => `${q.id} ${new Buffer(JSON.stringify(q)).toString('base64')}`));
+
+  return editResource('/data/test.dat4', lines.join('\n'))
+};
+
+export const getTestData = () => {
+  return getFileContent('/data/test.dat4')
+    .then((content) =>
+      content
+        .split('\n').filter(Boolean)
+        .map((line) => line.split(/\s+/).filter(Boolean).pop())
+        .map((content) => new Buffer(content, 'base64').toString('utf8'))
+        .map((content) => {
+          try {
+            content = JSON.parse(content);
+          } catch (er) {
+            content = null;
+          }
+
+          return content;
+        })
+        .filter(Boolean)
+    )
+    .then((content) => {
+      const meta = content.unshift();
+      const questions = content;
+
+      return {
+        meta,
+        questions
+      }
+    });
+};

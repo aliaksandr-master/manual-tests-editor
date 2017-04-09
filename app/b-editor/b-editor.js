@@ -2,7 +2,7 @@
 import component, { renderToDom } from 'tiny-component';
 import './b-editor.less';
 import componentDom from '../lib/component-dom';
-import { deleteResource, createResource, editResource } from '../lib/request';
+import { saveTestData } from '../lib/request';
 import symbol from '../lib/symbol';
 import sha1 from 'crypto-js/sha1';
 import bModalEditQuestion, { EVENT_DELETE, EVENT_CLOSE, EVENT_SAVE } from '../b-modal-edit-question/b-modal-edit-question';
@@ -74,12 +74,6 @@ export default component(({ questionsByTag }) => `
     document.body.classList.remove('modal-open');
   });
 
-  const saveToFile = (questions) => {
-    const lines = questions.map((q) => `${q.id} ${new Buffer(JSON.stringify(q)).toString('base64')}`);
-
-    return editResource(`/data/questions.dat4`, lines.join('\n'))
-  };
-
   events.on(EVENT_SAVE, ({ question }) => {
     const isNew = !question.id;
 
@@ -92,7 +86,7 @@ export default component(({ questionsByTag }) => `
       questions[index] = question;
     }
 
-    return saveToFile(questions)
+    return saveTestData(null, questions)
       .then(() => {
         if (question.id) {
           window.alert(`Данные вопроса обновлены`);
@@ -108,7 +102,7 @@ export default component(({ questionsByTag }) => `
     if (question.id) {
       questions = questions.filter((q) => q.id !== question.id);
 
-      return saveToFile(questions)
+      return saveTestData(null, questions)
         .then(() => {
           window.alert(`Удалено: ${question.id}`);
           window.location.reload(true);

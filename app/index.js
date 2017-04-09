@@ -3,7 +3,7 @@
 import { renderToDom } from 'tiny-component';
 import bEditor from './b-editor/b-editor';
 import { getObject } from './lib/localstorage';
-import { getFileContent } from './lib/request';
+import { getTestData } from './lib/request';
 import resolve from './lib/resolve';
 import groupBy from 'lodash/groupBy';
 import './index.less';
@@ -13,38 +13,22 @@ const MAX_TIME = 30 * 60 * 1000;
 
 resolve({
   auth: () => getObject('auth', { first_name: '', last_name: '', group_number: 0 }),
-  questions: () => getFileContent('/data/questions.dat4')
-    .then((content) =>
-      content
-        .split('\n').filter(Boolean)
-        .map((line) => line.split(/\s+/).filter(Boolean).pop())
-        .map((content) => new Buffer(content, 'base64').toString('utf8'))
-        .map((content) => {
-          try {
-            content = JSON.parse(content);
-          } catch (er) {
-            content = null;
-          }
-
-          return content;
-        })
-        .filter(Boolean)
-    )
+  test: () => getTestData()
 })
 .then(resolve.nested({
-  questionsByTag: ({ questions }) =>
+  questionsByTag: ({ test: { questions } }) =>
     groupBy(questions, (question) =>
       String(question.tag).trim()
     )
 }))
-.then(({ questions, auth, questionsByTag }) => {
+.then(({ test, auth, questionsByTag }) => {
   const data = {
     maxTime: MAX_TIME, // 30min
     maxQuestions: MAX_QUESTIONS_IN_TEST,
     auth,
-    questions,
+    questions: test.questions,
     questionsByTag,
-    questionsById: questions.reduce((questions, question) => {
+    questionsById: test.questions.reduce((questions, question) => {
       questions[question.id] = question;
 
       return questions;

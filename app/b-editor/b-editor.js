@@ -35,6 +35,20 @@ const menu = (questionsByTag) => `
 
 export default component(({ questionsByTag }) => `
 <div class="b-editor container">
+  <div class="b-editor__form">
+    <label>Дисциплина</label>
+    <input type="text" class="form-control" />
+    <div class="row">
+      <div class="col-xs-6">
+        <label>Продолжительность</label>
+        <input type="number" class="form-control" min="0" step="1" required />
+      </div>
+      <div class="col-xs-6">
+        <label>Количество вопросов</label>
+        <input type="number" class="form-control" min="0" step="1" required />
+      </div>
+    </div>
+  </div>
   ${menu(questionsByTag)}
   <div class="b-editor__add-btn-wr">
     <button class="b-editor__add-btn btn btn-success btn-lg" type="button">Создать новый вопрос</button>

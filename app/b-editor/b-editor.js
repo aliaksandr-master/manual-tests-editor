@@ -33,29 +33,35 @@ const menu = (questionsByTag) => `
 `;
 
 
-export default component(({ questionsByTag }) => `
+export default component(({ test, questionsByTag }) => `
 <div class="b-editor container">
-  <div class="b-editor__form">
+  <div id="test-form" class="b-editor__form">
     <label>Дисциплина</label>
-    <input type="text" class="form-control" />
+    <input type="text" name="discipline" value="${test.discipline || ''}" class="form-control" />
     <div class="row">
       <div class="col-xs-6">
         <label>Продолжительность</label>
-        <input type="number" class="form-control" min="0" step="1" required />
+        <input value="${test.duration || 30}" type="number" name="duration" class="form-control" min="0" step="1" required />
       </div>
       <div class="col-xs-6">
         <label>Количество вопросов</label>
-        <input type="number" class="form-control" min="0" step="1" required />
+        <input value="${test.count || 30}" type="number" name="count" class="form-control" min="0" step="1" required />
       </div>
     </div>
+    <br />
+    <div>
+      <button type="button" id="update-test-data" class="btn btn-primary">Обновить данные</button>    
+    </div>
   </div>
+  <br />
+  <br />
   ${menu(questionsByTag)}
   <div class="b-editor__add-btn-wr">
     <button class="b-editor__add-btn btn btn-success btn-lg" type="button">Создать новый вопрос</button>
   </div>
 </div>
 `, ({ questionsById, questions }, { el, events, child }) => {
-  const { on } = componentDom(el, events);
+  const { on, serialize } = componentDom(el, events);
 
   on('.b-editor__menu-tag-name', 'click', (ev) => {
     if (ev.currentTarget.parentNode.classList.contains(CLASS_HIDDEN_TAG_QUESTIONS)) {
@@ -122,6 +128,23 @@ export default component(({ questionsByTag }) => `
           window.location.reload(true);
         });
     }
+  });
+
+  on('#update-test-data', 'click', () => {
+    const _data = serialize('#test-form [name]');
+
+    const data = {
+      discipline: String(_data.discipline || '').trim(),
+      count: parseInt(_data.count, 10) || 30,
+      duration: parseInt(_data.duration, 10) || 30
+    };
+
+    saveTestData(data)
+      .then(() => {
+        window.alert(`Данные теста обновлены`);
+
+        window.location.reload(true);
+      });
   });
 
   on('.b-editor__add-btn', 'click', () => {

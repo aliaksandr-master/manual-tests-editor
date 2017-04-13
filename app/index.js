@@ -23,6 +23,7 @@ resolve({
 }))
 .then(({ test, auth, questionsByTag }) => {
   const data = {
+    test: test.meta,
     maxTime: MAX_TIME, // 30min
     maxQuestions: MAX_QUESTIONS_IN_TEST,
     auth,

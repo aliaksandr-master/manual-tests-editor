@@ -42,16 +42,6 @@ export const getFileContent = (url) => {
     .then((response) => response.text());
 };
 
-export const saveTestData = (meta, questions) => {
-  let lines = [
-    new Buffer(JSON.stringify(meta)).toString('base64')
-  ];
-
-  lines = lines.concat(questions.map((q) => `${q.id} ${new Buffer(JSON.stringify(q)).toString('base64')}`));
-
-  return editResource('/data/test.dat4', lines.join('\n'))
-};
-
 export const getTestData = () => {
   return getFileContent('/data/test.dat4')
     .then((content) =>
@@ -71,8 +61,8 @@ export const getTestData = () => {
         .filter(Boolean)
     )
     .then((content) => {
-      const meta = content.unshift();
-      const questions = content;
+      const [ meta, ...questions ] = content;
+      console.log(meta);
 
       return {
         meta,
@@ -80,3 +70,22 @@ export const getTestData = () => {
       }
     });
 };
+
+export const saveTestData = (meta = null, questions = null) =>
+  getTestData().then((test) => {
+    if (meta == null) {
+      meta = test.meta;
+    }
+
+    if (questions == null) {
+      questions = test.questions;
+    }
+
+    let lines = [
+      new Buffer(JSON.stringify(meta)).toString('base64')
+    ];
+
+    lines = lines.concat(questions.map((q) => `${q.id} ${new Buffer(JSON.stringify(q)).toString('base64')}`));
+
+    return editResource('/data/test.dat4', lines.join('\n'));
+  });
